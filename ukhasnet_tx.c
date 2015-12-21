@@ -272,7 +272,7 @@ int tx_packet(void)
 	}
 	
 	/* TODO: Timeout */
-	while((hackrf_is_streaming(device) == HACKRF_TRUE) && do_exit == 0)
+	while(do_exit == 0)
 		usleep(100000);
 	
 	//r = hackrf_is_streaming(device);	
