@@ -37,7 +37,7 @@
 /* Globals -- urgh */
 volatile int8_t baseband_packet[MAX_WAVE];
 volatile int8_t *baseband_sample = NULL;
-volatile size_t baseband_length = MAX_WAVE;
+volatile ssize_t baseband_length = MAX_WAVE;
 
 volatile char do_exit = 0;
 
@@ -169,8 +169,19 @@ int tx_callback(hackrf_transfer* transfer)
 {
 	size_t bytes_to_read;
 	
-	if(baseband_length <= 0)
+	if(baseband_length == 0)
 	{
+		/* Packet has finished. Send one last
+		 * blank buffer in to avoid the hackrf
+		 * transmitting noise before the TX
+		 * shuts down */
+		memset(transfer->buffer, 0, transfer->valid_length);
+		baseband_length--;
+		return(0);
+	}
+	else if(baseband_length < 0)
+	{
+		/* All done. Signal to the main thread to end TX */
 		do_exit = -1;
 		return(-1);
 	}
