@@ -3,5 +3,10 @@ Transmits a ukhasnet-style packet on 869.500 MHz from a HackRF.
 
 Usage: ukhasnet_tx "packet content"
 
+Test reception with RTL-SDR:
+
+rtl_fm -f 869500000 -s 64k -g 48 -p 162 | UKHASnet-decoder/UKHASnet-decoder -v -s 64000
+
 -Philip Heron <phil@sanslogic.co.uk>
 
+-EMARD (fixed to work for my hackrf blue)
