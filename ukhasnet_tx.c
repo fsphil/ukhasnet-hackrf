@@ -28,11 +28,12 @@
 #define CRC_INIT     (0x1D0F)
 #define MAX_PACKET (PREAMBLE_LEN + 2 + MAX_LENGTH + 2)
 
-/* HackRF specifics -- number of silent samples to send first */
-#define HACKRF_DELAY (SAMPLERATE * 1)
+/* HackRF specifics -- number of silent samples to send first and last */
+#define HACKRF_FIRST_DELAY (SAMPLERATE / 16)
+#define HACKRF_LAST_DELAY (SAMPLERATE / 4)
 
 /* Memory required for max packet, bytes */
-#define MAX_WAVE ((HACKRF_DELAY + (MAX_PACKET * 8 * SPS)) * 2)
+#define MAX_WAVE ((HACKRF_FIRST_DELAY + (MAX_PACKET * 8 * SPS) + HACKRF_LAST_DELAY) * 2)
 
 /* Globals -- urgh */
 volatile int8_t baseband_packet[MAX_WAVE];
@@ -127,8 +128,8 @@ void ukhasnet_packet(void *data, size_t length)
 			fih[b] = fqh[b] = 0;
 		
 		samp = 0;
-		//for(j = 0; j < HACKRF_DELAY * 2; j++)
-		//	baseband_packet[samp++] = 0;
+		for(j = 0; j < HACKRF_FIRST_DELAY * 2; j++)
+			baseband_packet[samp++] = 0;
 		
 		/* i == the number of bytes to transmit, set above */
 		for(j = 0; j < i; j++)
@@ -142,7 +143,7 @@ void ukhasnet_packet(void *data, size_t length)
 					fi = cos(ph);
 					fq = sin(ph);
 					
-					ph += (bit ? FSTEP : -FSTEP);
+					ph += (bit ? -FSTEP : FSTEP);
 					
 					fi = _fir(FIR_LEN, _fir_co, fih, fi);
 					fq = _fir(FIR_LEN, _fir_co, fqh, fq);
@@ -153,6 +154,9 @@ void ukhasnet_packet(void *data, size_t length)
 			}
 		}
 		fprintf(stderr, "\n");
+
+		for(j = 0; j < HACKRF_LAST_DELAY * 2; j++)
+			baseband_packet[samp++] = 0;
 		
 		baseband_sample = baseband_packet;
 		baseband_length = samp;
