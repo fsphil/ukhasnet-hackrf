@@ -21,6 +21,7 @@
 #define FSTEP      (2 * M_PI * DEVIATION / SAMPLERATE)
 
 /* Packet details */
+#define INVERT_BITS  (0)           /* 0-send normal, 1-send inverted */
 #define PREAMBLE_SYM (0xAA)
 #define PREAMBLE_LEN (3)
 #define SYNC_WORD    (0x2DAA)
@@ -143,7 +144,11 @@ void ukhasnet_packet(void *data, size_t length)
 					fi = cos(ph);
 					fq = sin(ph);
 					
+					#if INVERT_BITS
 					ph += (bit ? -FSTEP : FSTEP);
+					#else
+					ph += (bit ? FSTEP : -FSTEP);
+					#endif
 					
 					fi = _fir(FIR_LEN, _fir_co, fih, fi);
 					fq = _fir(FIR_LEN, _fir_co, fqh, fq);
