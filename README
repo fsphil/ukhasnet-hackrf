@@ -7,6 +7,11 @@ Test reception with RTL-SDR:
 
 rtl_fm -f 869500000 -s 64k -g 48 -p 162 | UKHASnet-decoder/UKHASnet-decoder -v -s 64000
 
+If it receives wrong sync D255 instead of 2DAA
+then all bits in packet have to be inverted
+
+#define INVERT_BITS  (1)
+
 -Philip Heron <phil@sanslogic.co.uk>
 
 -EMARD (fixed to work for my hackrf blue)
