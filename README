@@ -3,9 +3,10 @@ Transmits a ukhasnet-style packet on 869.500 MHz from a HackRF.
 
 Usage: ukhasnet_tx "packet content"
 
-Test reception with RTL-SDR:
+Test reception with RTL-SDR
+https://github.com/UKHASnet/UKHASnet-decoder
 
-rtl_fm -f 869500000 -s 64k -g 48 -p 162 | UKHASnet-decoder/UKHASnet-decoder -v -s 64000
+rtl_fm -f 869500000 -s 64k -g 48 -p 162 | UKHASnet-decoder -v -s 64000
 
 If it receives wrong sync D255 instead of 2DAA
 then all bits in packet have to be inverted
